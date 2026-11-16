@@ -91,5 +91,20 @@
   "landing.faq.q3": "Сколько действует ссылка спикера?",
   "landing.faq.a3": "По умолчанию 2 часа, максимум 24 часа.",
   "landing.faq.q4": "Какие способы входа поддерживаются?",
-  "landing.faq.a4": "VK ID и Яндекс ID."
+  "landing.faq.a4": "VK ID и Яндекс ID.",
+  "pairing.title": "Привязка компьютера",
+  "pairing.hint": "Введите код, который показал воркер.",
+  "pairing.code": "Код привязки",
+  "pairing.submit": "Привязать",
+  "pairing.success": "Компьютер привязан. Вернитесь к воркеру — он подключится автоматически.",
+  "cabinet.devices": "Компьютеры",
+  "cabinet.device.online": "На связи",
+  "cabinet.device.offline": "Не на связи",
+  "cabinet.device.version": "Версия воркера",
+  "cabinet.device.lastSeen": "Последняя связь",
+  "cabinet.device.never": "ещё не подключался",
+  "cabinet.device.rename": "Переименовать",
+  "cabinet.device.unlink": "Отвязать",
+  "cabinet.device.unlinkConfirm": "Отвязать компьютер? Доступ будет отозван немедленно.",
+  "cabinet.device.name": "Название компьютера"
 }

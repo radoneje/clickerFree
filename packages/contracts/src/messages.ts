@@ -52,11 +52,59 @@ export const versionCheckResponseSchema = z.object({
   latestVersion: z.string().min(1),
   minSupportedVersion: z.string().min(1),
   protocolVersion: z.number().int().positive(),
-  downloadUrl: z.url({ protocol: /^https$/ }),
-  sha256: z.string().regex(/^[0-9a-f]{64}$/),
-  descriptionKey: z.string().min(1),
+  // До публикации первого релиза ссылки и контрольные суммы отсутствуют.
+  downloadUrl: z.url({ protocol: /^https$/ }).nullable(),
+  sha256: z
+    .string()
+    .regex(/^[0-9a-f]{64}$/)
+    .nullable(),
+  descriptionKey: z.string().min(1).nullable(),
 });
 export type VersionCheckResponse = z.infer<typeof versionCheckResponseSchema>;
+
+export const pairingCodeRequestSchema = z.object({
+  installId: z.uuid(),
+  name: z.string().min(1).max(64),
+  os: workerOsSchema,
+  arch: workerArchSchema,
+  appVersion: z.string().min(1),
+  protocolVersion: z.number().int().positive(),
+});
+export type PairingCodeRequest = z.infer<typeof pairingCodeRequestSchema>;
+
+export const pairingCodeResponseSchema = z.object({
+  code: z.string().length(8),
+  expiresAt: z.number().int(),
+});
+export type PairingCodeResponse = z.infer<typeof pairingCodeResponseSchema>;
+
+export const pairingConfirmSchema = z.object({
+  code: z.string().length(8),
+});
+export type PairingConfirm = z.infer<typeof pairingConfirmSchema>;
+
+export const pairingResultSchema = z.discriminatedUnion('status', [
+  z.object({ status: z.literal('pending') }),
+  z.object({
+    status: z.literal('confirmed'),
+    deviceId: z.uuid(),
+    credential: z.string().min(1),
+  }),
+  z.object({ status: z.literal('expired') }),
+]);
+export type PairingResult = z.infer<typeof pairingResultSchema>;
+
+export const deviceSummarySchema = z.object({
+  id: z.uuid(),
+  name: z.string(),
+  os: workerOsSchema,
+  arch: workerArchSchema,
+  appVersion: z.string(),
+  protocolVersion: z.number().int(),
+  lastSeenAt: z.number().int().nullable(),
+  online: z.boolean(),
+});
+export type DeviceSummary = z.infer<typeof deviceSummarySchema>;
 
 export const timerStateSchema = z.object({
   endAt: z.number().int().nullable(),
@@ -68,4 +116,5 @@ export const socketEvents = {
   controlCommand: 'control:command',
   controlAck: 'control:ack',
   timerState: 'timer:state',
+  workerConnected: 'worker:connected',
 } as const;

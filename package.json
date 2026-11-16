@@ -22,6 +22,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:worker": "worker/.venv/bin/python -m pytest worker/tests -q",
     "db:generate": "npm run db:generate -w @clickerfree/db",
     "db:migrate": "npm run build -w @clickerfree/db && npm run db:migrate -w @clickerfree/db"
   },

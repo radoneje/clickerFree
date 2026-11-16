@@ -2,6 +2,7 @@ node_modules/
 dist/
 coverage/
 .next/
+.qwen/
 playwright-report/
 test-results/
 *.tsbuildinfo
@@ -15,3 +16,6 @@ __pycache__/
 .venv/
 worker/build/
 worker/dist/
+worker-windows/**/bin/
+worker-windows/**/obj/
+TestResults/

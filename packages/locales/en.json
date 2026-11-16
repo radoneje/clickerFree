@@ -91,5 +91,20 @@
   "landing.faq.q3": "How long does a speaker link last?",
   "landing.faq.a3": "2 hours by default, up to 24 hours.",
   "landing.faq.q4": "Which sign-in methods are supported?",
-  "landing.faq.a4": "VK ID and Yandex ID."
+  "landing.faq.a4": "VK ID and Yandex ID.",
+  "pairing.title": "Link a computer",
+  "pairing.hint": "Enter the code shown by the worker.",
+  "pairing.code": "Pairing code",
+  "pairing.submit": "Link",
+  "pairing.success": "Computer linked. Return to the worker — it will connect automatically.",
+  "cabinet.devices": "Computers",
+  "cabinet.device.online": "Online",
+  "cabinet.device.offline": "Offline",
+  "cabinet.device.version": "Worker version",
+  "cabinet.device.lastSeen": "Last seen",
+  "cabinet.device.never": "never connected",
+  "cabinet.device.rename": "Rename",
+  "cabinet.device.unlink": "Unlink",
+  "cabinet.device.unlinkConfirm": "Unlink this computer? Access will be revoked immediately.",
+  "cabinet.device.name": "Computer name"
 }

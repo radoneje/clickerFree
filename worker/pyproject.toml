@@ -1,0 +1,23 @@
+[project]
+name = "clickerfree-worker"
+version = "0.1.0"
+description = "ClickerFree macOS worker: switches presentation slides via Quartz key events"
+requires-python = ">=3.11"
+dependencies = [
+    "python-socketio[client]>=5.11",
+    "keyring>=25",
+    "pyobjc-framework-Quartz>=10; sys_platform == 'darwin'",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+clickerfree-worker = "clickerfree_worker.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

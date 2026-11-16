@@ -23,11 +23,12 @@
 - Обновление сервера вручную: GitHub → SSH → `git pull` → сборка → PM2.
 - Используется существующий Nginx; Docker и Caddy не используются.
 - Безопасность, ограничения нагрузки и статистика входят в первую версию.
+- Воркер Windows — нативный C#/.NET (self-contained exe, без Python); воркер macOS — Python.
 
 ## Разработка / Development
 
-Требуется Node.js LTS (не ниже 24) и npm. Python-инструменты воркера появятся на этапе 4.
-Requires Node.js LTS (24+) and npm. Python worker tooling arrives in stage 4.
+Требуется Node.js LTS (не ниже 24) и npm. Воркер macOS — Python (`worker/`), воркер Windows — C#/.NET (`worker-windows/`).
+Requires Node.js LTS (24+) and npm. The macOS worker is Python (`worker/`); the Windows worker is C#/.NET (`worker-windows/`).
 
 ```sh
 npm ci             # зависимости из lock-файла / install from lockfile
@@ -38,6 +39,7 @@ npm run db:generate # генерация миграций из схемы / gene
 npm run db:migrate # применение миграций / apply migrations
 npm run format     # форматирование Prettier / Prettier formatting
 npm run test:e2e   # E2E Playwright (нужен Chromium: npx playwright install chromium) / Playwright E2E (requires Chromium)
+npm run test:worker # тесты воркера (нужен venv, см. worker/README.md) / worker tests (venv required, see worker/README.md)
 ```
 
 Локальный запуск (два терминала):
@@ -51,6 +53,12 @@ npm run dev -w @clickerfree/web                          # терминал 2, �
 
 Откройте http://localhost:3000 — главная, вход, кабинет и настройки. Кнопка «Тестовый вход» работает при `OAUTH_DEV_ENABLED=true`. `env -u SESSION_SECRET` нужен, только если оболочка экспортирует устаревший `SESSION_SECRET`, перекрывающий `.env`.
 Open http://localhost:3000 — landing, sign-in, dashboard, and settings. The "Test sign-in" button works with `OAUTH_DEV_ENABLED=true`. `env -u SESSION_SECRET` is only needed if your shell exports a stale `SESSION_SECRET` that overrides `.env`.
+
+Воркер локально: `worker/.venv/bin/clickerfree-worker --server http://localhost:3000 --api-url http://127.0.0.1:3001` (Next.js не проксирует WebSocket, поэтому Socket.IO идёт напрямую в API; в продакшене это делает Nginx и `--api-url` не нужен). Смоук всего цикла: `node scripts/worker-smoke.mjs`.
+Worker locally: `worker/.venv/bin/clickerfree-worker --server http://localhost:3000 --api-url http://127.0.0.1:3001` (Next.js does not proxy WebSocket, so Socket.IO goes straight to the API; in production Nginx handles it and `--api-url` is unnecessary). Full-cycle smoke: `node scripts/worker-smoke.mjs`.
+
+Windows-воркер (нативный C#/.NET 10, `worker-windows/`): сборка и тесты на Windows-машине — `dotnet test worker-windows/tests/ClickerFree.Worker.Tests.csproj`, публикация — `dotnet publish worker-windows/src/ClickerFree.Worker.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true`. Секреты по умолчанию в Credential Manager (работает в интерактивной сессии); для headless/SSH есть явный opt-in `CLICKERFREE_SECRET_FILE`. Кросс-машинный смоук: `node scripts/windows-worker-smoke.mjs` (нужен SSH-доступ к Windows-машине).
+Windows worker (native C#/.NET 10, `worker-windows/`): build and test on a Windows machine — `dotnet test worker-windows/tests/ClickerFree.Worker.Tests.csproj`, publish — `dotnet publish worker-windows/src/ClickerFree.Worker.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true`. Secrets default to Credential Manager (works in an interactive session); headless/SSH has an explicit `CLICKERFREE_SECRET_FILE` opt-in. Cross-machine smoke: `node scripts/windows-worker-smoke.mjs` (requires SSH access to a Windows machine).
 
 Для тестов и `db:migrate` нужен PostgreSQL и `DATABASE_URL` в `.env`. Тесты создают временные базы, поэтому роль должна иметь `CREATEDB`.
 Tests and `db:migrate` require PostgreSQL and `DATABASE_URL` in `.env`. Tests create scratch databases, so the role needs `CREATEDB`.

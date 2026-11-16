@@ -23,11 +23,12 @@ flowchart LR
 | UI | Tailwind CSS, shadcn/ui |
 | Локализация | next-intl на сайте; общие коды и словари, отдельные словари воркера |
 | API | Node.js поддерживаемой LTS-ветки, Fastify, TypeScript |
-| Связь | Socket.IO для браузера и Python-клиент воркера |
+| Связь | Socket.IO для браузера и воркеров (Python-клиент на macOS, .NET-клиент на Windows) |
 | Хранение | PostgreSQL, Drizzle ORM и версионированные миграции |
-| Воркер | Python, системные API клавиатуры, PyInstaller |
+| Воркер macOS | Python, Quartz CGEvent, PyInstaller |
+| Воркер Windows | C# / .NET 10 (LTS), SendInput, self-contained single-file exe |
 | Процессы | PM2, конфигурация ecosystem.config.cjs |
-| Проверки | Vitest, Playwright, pytest, ESLint, Prettier |
+| Проверки | Vitest, Playwright, pytest, xUnit (dotnet test), ESLint, Prettier |
 
 Конкретные версии фиксируются при создании приложения в lock-файлах. На старте Redis не требуется: лимиты критичных HTTP-операций и сессии сохраняются в PostgreSQL, лимиты команд и текущие соединения — в единственном процессе API. PM2 cluster для API не включать. Перед горизонтальным масштабированием вынести общий учёт соединений и ограничений, выбрать Socket.IO adapter и проверить поведение повторных подключений.
 
@@ -38,7 +39,8 @@ apps/web/              # главная, кабинет, пульт, админ�
 apps/api/              # HTTP API, OAuth, Socket.IO, фоновые задания
 packages/contracts/    # схемы сообщений, коды ошибок, версии протокола
 packages/locales/      # ru/en и проверки полноты переводов
-worker/                # программа Windows/macOS и её тесты
+worker/                # воркер macOS (Python) и его тесты
+worker-windows/        # воркер Windows (C#/.NET) и его тесты
 db/                    # схема и миграции
 ops/                   # PM2, пример Nginx, инструкции релизов
 docs/                  # проектная документация

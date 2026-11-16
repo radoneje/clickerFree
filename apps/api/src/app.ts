@@ -8,6 +8,10 @@ import type { ApiConfig } from './config.js';
 import { sendError } from './errors.js';
 import { takeRateLimit } from './rate-limit.js';
 import { registerAuthRoutes } from './auth/routes.js';
+import { registerPairingRoutes } from './pairing/routes.js';
+import { registerDeviceRoutes } from './devices/routes.js';
+import { registerVersionRoute } from './releases/version.js';
+import { attachRealtime } from './realtime/gateway.js';
 import { BROWSER_COOKIE, CSRF_COOKIE, SESSION_COOKIE } from './auth/cookies.js';
 import { findSession } from './auth/sessions.js';
 import './types.js';
@@ -136,6 +140,10 @@ export function buildApp({ config, pool, fetchImpl }: BuildAppOptions): FastifyI
   });
 
   registerAuthRoutes(app, { config, db, fetchImpl: fetchImpl ?? globalThis.fetch });
+  registerPairingRoutes(app, { db });
+  registerDeviceRoutes(app, { db });
+  registerVersionRoute(app, { config, db });
+  attachRealtime(app, { config, db });
 
   return app;
 }

@@ -1,0 +1,8 @@
+python-socketio[client]>=5.11
+keyring>=25
+
+[:sys_platform == "darwin"]
+pyobjc-framework-Quartz>=10
+
+[dev]
+pytest>=8
