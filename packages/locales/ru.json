@@ -106,5 +106,19 @@
   "cabinet.device.rename": "Переименовать",
   "cabinet.device.unlink": "Отвязать",
   "cabinet.device.unlinkConfirm": "Отвязать компьютер? Доступ будет отозван немедленно.",
-  "cabinet.device.name": "Название компьютера"
+  "cabinet.device.name": "Название компьютера",
+  "cabinet.device.openRemote": "Открыть пульт",
+  "cabinet.device.timer": "Таймер",
+  "errors.device_offline": "Компьютер не на связи.",
+  "remote.title": "Пульт",
+  "remote.requestControl": "Запросить управление",
+  "remote.viewer": "Режим просмотра: управление занято",
+  "remote.takeoverRequest": "Другой пульт запрашивает управление",
+  "remote.approve": "Разрешить",
+  "remote.deny": "Отклонить",
+  "remote.timerLabel": "Таймер",
+  "remote.timer.stop": "Стоп",
+  "remote.timer.minutes": "{minutes} мин",
+  "remote.timer.finished": "Время вышло",
+  "remote.commandFailed": "Команда не выполнена"
 }

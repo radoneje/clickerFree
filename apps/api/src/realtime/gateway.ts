@@ -13,6 +13,8 @@ import type { ApiConfig } from '../config.js';
 import { takeRateLimit } from '../rate-limit.js';
 import { hashToken } from '../auth/sessions.js';
 import { minSupportedVersion } from '../releases/version.js';
+import { takeAck } from '../control/state.js';
+import { deviceRoom } from '../control/service.js';
 import { registerConnection, removeConnection } from './registry.js';
 
 export function attachRealtime(
@@ -97,16 +99,21 @@ export function attachRealtime(
       .set({ lastSeenAt: new Date(), appVersion: socket.data.appVersion as string })
       .where(eq(devices.id, deviceId));
     socket.emit(socketEvents.workerConnected, { generation });
+    io.of('/remote').to(deviceRoom(deviceId)).emit(socketEvents.deviceStatus, { online: true });
 
     socket.on(socketEvents.controlAck, (payload) => {
       const parsed = commandAckSchema.safeParse(payload);
       if (!parsed.success) return;
-      // Маршрутизация подтверждений в управляющий сеанс появится на этапе 5.
+      const remoteSocketId = takeAck(parsed.data.commandId);
+      if (remoteSocketId) {
+        io.of('/remote').to(remoteSocketId).emit(socketEvents.controlAck, parsed.data);
+      }
     });
 
     socket.on('disconnect', async () => {
       removeConnection(deviceId, socket.id);
       await db.update(devices).set({ lastSeenAt: new Date() }).where(eq(devices.id, deviceId));
+      io.of('/remote').to(deviceRoom(deviceId)).emit(socketEvents.deviceStatus, { online: false });
     });
   });
 

@@ -42,6 +42,7 @@ start(['apps/api/dist/server.js'], {
   APP_BASE_URL: process.env.E2E_APP_BASE_URL ?? 'http://localhost:3000',
   API_HOST: process.env.E2E_API_HOST ?? '127.0.0.1',
   API_PORT: '3001',
+  SOCKET_PUBLIC_URL: process.env.E2E_SOCKET_PUBLIC_URL ?? 'http://localhost:3001',
 });
 start(
   [

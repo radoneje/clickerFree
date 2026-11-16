@@ -29,6 +29,10 @@ export function isOnline(deviceId: string): boolean {
   return connections.has(deviceId);
 }
 
+export function getConnection(deviceId: string): WorkerConnection | undefined {
+  return connections.get(deviceId);
+}
+
 export function disconnectDevice(deviceId: string): void {
   const current = connections.get(deviceId);
   connections.delete(deviceId);

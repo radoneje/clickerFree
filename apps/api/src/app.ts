@@ -12,6 +12,8 @@ import { registerPairingRoutes } from './pairing/routes.js';
 import { registerDeviceRoutes } from './devices/routes.js';
 import { registerVersionRoute } from './releases/version.js';
 import { attachRealtime } from './realtime/gateway.js';
+import { registerRemoteNamespace } from './realtime/remote.js';
+import { registerControlRoutes } from './control/routes.js';
 import { BROWSER_COOKIE, CSRF_COOKIE, SESSION_COOKIE } from './auth/cookies.js';
 import { findSession } from './auth/sessions.js';
 import './types.js';
@@ -97,9 +99,16 @@ export function buildApp({ config, pool, fetchImpl }: BuildAppOptions): FastifyI
     request.auth = token ? await findSession(db, token) : null;
   });
 
-  // CSRF применяется к cookie-сессиям; токенная аутентификация воркеров появится позже.
+  // CSRF применяется к cookie-сессиям. Эндпоинты воркера аутентифицируются
+  // секретом x-worker-secret, а не cookie, и от CSRF не зависят.
   app.addHook('onRequest', async (request, reply) => {
     if (!MUTATING_METHODS.includes(request.method) || !request.auth) return;
+    if (
+      request.url.startsWith('/api/pairing/code') ||
+      request.url.startsWith('/api/pairing/result')
+    ) {
+      return;
+    }
     const csrfCookie = request.cookies[CSRF_COOKIE];
     const csrfHeader = request.headers['x-csrf-token'];
     if (
@@ -143,7 +152,9 @@ export function buildApp({ config, pool, fetchImpl }: BuildAppOptions): FastifyI
   registerPairingRoutes(app, { db });
   registerDeviceRoutes(app, { db });
   registerVersionRoute(app, { config, db });
-  attachRealtime(app, { config, db });
+  const io = attachRealtime(app, { config, db });
+  registerRemoteNamespace(io, { config, db });
+  registerControlRoutes(app, { config, db, io });
 
   return app;
 }

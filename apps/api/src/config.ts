@@ -18,6 +18,7 @@ const envSchema = z.object({
   YANDEX_ID_CLIENT_ID: z.string().default(''),
   YANDEX_ID_CLIENT_SECRET: z.string().default(''),
   OAUTH_DEV_ENABLED: z.enum(['true', 'false']).default('false'),
+  SOCKET_PUBLIC_URL: z.string().default(''),
 });
 
 export type ApiConfig = z.infer<typeof envSchema>;

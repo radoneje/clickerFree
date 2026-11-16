@@ -106,5 +106,19 @@
   "cabinet.device.rename": "Rename",
   "cabinet.device.unlink": "Unlink",
   "cabinet.device.unlinkConfirm": "Unlink this computer? Access will be revoked immediately.",
-  "cabinet.device.name": "Computer name"
+  "cabinet.device.name": "Computer name",
+  "cabinet.device.openRemote": "Open remote",
+  "cabinet.device.timer": "Timer",
+  "errors.device_offline": "The computer is offline.",
+  "remote.title": "Remote",
+  "remote.requestControl": "Request control",
+  "remote.viewer": "View-only mode: control is in use",
+  "remote.takeoverRequest": "Another remote is requesting control",
+  "remote.approve": "Allow",
+  "remote.deny": "Deny",
+  "remote.timerLabel": "Timer",
+  "remote.timer.stop": "Stop",
+  "remote.timer.minutes": "{minutes} min",
+  "remote.timer.finished": "Time is up",
+  "remote.commandFailed": "Command was not executed"
 }

@@ -1,2 +1,0 @@
-[console_scripts]
-clickerfree-worker = clickerfree_worker.__main__:main

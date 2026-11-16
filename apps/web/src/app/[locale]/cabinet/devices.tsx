@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { DeviceExtras } from './device-extras';
 
 export interface Device {
   id: string;
@@ -118,7 +119,14 @@ export function DeviceList({ devices, locale }: { devices: Device[]; locale: str
             >
               {t('device.unlink')}
             </button>
+            <a
+              href={`/${locale}/remote/${device.id}`}
+              className="rounded bg-blue-600 px-3 py-1 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              {t('device.openRemote')}
+            </a>
           </div>
+          <DeviceExtras deviceId={device.id} />
         </section>
       ))}
     </div>

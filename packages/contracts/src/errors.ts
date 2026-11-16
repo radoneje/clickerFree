@@ -41,6 +41,7 @@ export const errorCatalog = {
   oauth_provider_unavailable: ['provider'],
   oauth_account_conflict: [],
   last_provider_required: [],
+  device_offline: [],
 } as const satisfies Record<string, readonly string[]>;
 
 export type ErrorCode = keyof typeof errorCatalog;

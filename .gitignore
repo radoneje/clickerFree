@@ -19,3 +19,4 @@ worker/dist/
 worker-windows/**/bin/
 worker-windows/**/obj/
 TestResults/
+*.egg-info/

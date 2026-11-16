@@ -115,6 +115,37 @@ export type TimerState = z.infer<typeof timerStateSchema>;
 export const socketEvents = {
   controlCommand: 'control:command',
   controlAck: 'control:ack',
+  controlState: 'control:state',
+  controlRequest: 'control:request',
+  controlApprove: 'control:approve',
+  controlDeny: 'control:deny',
+  controlReleased: 'control:released',
+  takeoverRequest: 'control:takeover-request',
   timerState: 'timer:state',
+  timerSet: 'timer:set',
+  deviceStatus: 'device:status',
   workerConnected: 'worker:connected',
 } as const;
+
+export const remoteCommandSchema = z.object({
+  commandId: z.uuid(),
+  action: commandActionSchema,
+});
+export type RemoteCommand = z.infer<typeof remoteCommandSchema>;
+
+export const controlStateSchema = z.object({
+  role: z.enum(['controller', 'viewer']),
+  controlSessionId: z.uuid().nullable(),
+  deviceOnline: z.boolean(),
+});
+export type ControlState = z.infer<typeof controlStateSchema>;
+
+export const timerSetSchema = z.object({
+  endAt: z.number().int().nullable(),
+});
+export type TimerSet = z.infer<typeof timerSetSchema>;
+
+export const takeoverDecisionSchema = z.object({
+  requestId: z.uuid(),
+});
+export type TakeoverDecision = z.infer<typeof takeoverDecisionSchema>;
