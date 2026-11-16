@@ -169,7 +169,7 @@ export function registerAuthRoutes(
       if (!identity) {
         await db.insert(oauthAccounts).values({ userId: auth.userId, provider, providerUserId });
       }
-      return reply.redirect(`${config.APP_BASE_URL}/${auth.siteLang}/settings`);
+      return reply.redirect(`${config.APP_BASE_URL}/${auth.siteLang}/cabinet`);
     }
 
     let userId: string;
@@ -198,7 +198,7 @@ export function registerAuthRoutes(
       httpOnly: true,
       maxAge: config.SESSION_TTL_DAYS * 86400,
     });
-    return reply.redirect(`${config.APP_BASE_URL}/${siteLang}/settings`);
+    return reply.redirect(`${config.APP_BASE_URL}/${siteLang}/cabinet`);
   });
 
   // Тестовый провайдер: мгновенный возврат кода, только вне продакшена.

@@ -21,11 +21,13 @@
     "check": "npm run build && npm run lint && npm run typecheck && npm run check:locales && npm run format:check",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "db:generate": "npm run db:generate -w @clickerfree/db",
     "db:migrate": "npm run build -w @clickerfree/db && npm run db:migrate -w @clickerfree/db"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
+    "@playwright/test": "^1.65.0",
     "@types/node": "^26.0.0",
     "eslint": "^10.0.0",
     "globals": "^16.0.0",

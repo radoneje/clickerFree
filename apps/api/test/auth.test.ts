@@ -179,7 +179,7 @@ describe('oauth login', () => {
     const jar = cookieJar();
     const first = await login(app, jar, 'vk');
     expect(first.statusCode).toBe(302);
-    expect(String(first.headers.location)).toBe(`${BASE}/ru/settings`);
+    expect(String(first.headers.location)).toBe(`${BASE}/ru/cabinet`);
     const profile = (await me(app, jar)).json();
     expect(profile.providers).toEqual(['vk']);
 
@@ -256,7 +256,7 @@ describe('provider linking', () => {
     const jar = cookieJar();
     await login(app, jar, 'vk');
     const callback = await login(app, jar, 'yandex', '?mode=link');
-    expect(String(callback.headers.location)).toBe(`${BASE}/ru/settings`);
+    expect(String(callback.headers.location)).toBe(`${BASE}/ru/cabinet`);
     const profile = (await me(app, jar)).json();
     expect(profile.providers.sort()).toEqual(['vk', 'yandex']);
   });

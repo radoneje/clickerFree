@@ -37,7 +37,20 @@ npm run build      # сборка рабочих пространств / build 
 npm run db:generate # генерация миграций из схемы / generate migrations from schema
 npm run db:migrate # применение миграций / apply migrations
 npm run format     # форматирование Prettier / Prettier formatting
+npm run test:e2e   # E2E Playwright (нужен Chromium: npx playwright install chromium) / Playwright E2E (requires Chromium)
 ```
+
+Локальный запуск (два терминала):
+Local run (two terminals):
+
+```sh
+npm ci && npm run db:migrate && npm run build
+env -u SESSION_SECRET npm run start -w @clickerfree/api  # терминал 1, порт 3001 / terminal 1, port 3001
+npm run dev -w @clickerfree/web                          # терминал 2, порт 3000 / terminal 2, port 3000
+```
+
+Откройте http://localhost:3000 — главная, вход, кабинет и настройки. Кнопка «Тестовый вход» работает при `OAUTH_DEV_ENABLED=true`. `env -u SESSION_SECRET` нужен, только если оболочка экспортирует устаревший `SESSION_SECRET`, перекрывающий `.env`.
+Open http://localhost:3000 — landing, sign-in, dashboard, and settings. The "Test sign-in" button works with `OAUTH_DEV_ENABLED=true`. `env -u SESSION_SECRET` is only needed if your shell exports a stale `SESSION_SECRET` that overrides `.env`.
 
 Для тестов и `db:migrate` нужен PostgreSQL и `DATABASE_URL` в `.env`. Тесты создают временные базы, поэтому роль должна иметь `CREATEDB`.
 Tests and `db:migrate` require PostgreSQL and `DATABASE_URL` in `.env`. Tests create scratch databases, so the role needs `CREATEDB`.
