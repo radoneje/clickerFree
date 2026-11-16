@@ -58,9 +58,9 @@ docs/                  # проектная документация
 
 ## Данные
 
-Основные таблицы: `users`, `oauth_accounts`, `sessions`, `devices`, `device_credentials`, `pairing_requests`, `invitations`, `control_sessions`, `timers`, `worker_releases`, `download_events`, `usage_events`, `daily_metrics`, `audit_events`, `rate_limit_buckets`.
+Основные таблицы: `users`, `oauth_accounts`, `sessions`, `devices`, `device_credentials`, `pairing_requests`, `invitations`, `invitation_sessions`, `control_sessions`, `timers`, `worker_releases`, `download_events`, `usage_events`, `daily_metrics`, `audit_events`, `rate_limit_buckets`.
 
-`oauth_accounts` имеет уникальный ключ `(provider, provider_user_id)`. Устройство принадлежит одному пользователю. Время хранится в UTC; язык и часовой пояс отображения не меняют значения событий. У пользователей хранится язык сайта, у приглашений — язык пульта. Токены, пароль приглашения и коды сопряжения в открытом виде не сохраняются.
+`oauth_accounts` имеет уникальный ключ `(provider, provider_user_id)`. Устройство принадлежит одному пользователю. Время хранится в UTC; язык и часовой пояс отображения не меняют значения событий. У пользователей хранится язык сайта, у приглашений — язык пульта. Токены приглашений и коды сопряжения в открытом виде не сохраняются.
 
 ## Авторизация
 

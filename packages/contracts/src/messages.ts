@@ -149,3 +149,22 @@ export const takeoverDecisionSchema = z.object({
   requestId: z.uuid(),
 });
 export type TakeoverDecision = z.infer<typeof takeoverDecisionSchema>;
+
+export const invitationCreateSchema = z.object({
+  lang: z.enum(['ru', 'en']),
+  hours: z.number().int().min(1).max(24).default(2),
+});
+export type InvitationCreate = z.infer<typeof invitationCreateSchema>;
+
+export const invitationExchangeSchema = z.object({
+  token: z.string().min(32).max(128),
+});
+export type InvitationExchange = z.infer<typeof invitationExchangeSchema>;
+
+export const invitationSummarySchema = z.object({
+  id: z.uuid(),
+  lang: z.enum(['ru', 'en']),
+  expiresAt: z.number().int(),
+  createdAt: z.number().int(),
+});
+export type InvitationSummary = z.infer<typeof invitationSummarySchema>;

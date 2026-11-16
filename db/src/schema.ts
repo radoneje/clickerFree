@@ -146,6 +146,24 @@ export const invitations = pgTable(
   ],
 );
 
+export const invitationSessions = pgTable(
+  'invitation_sessions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    invitationId: uuid('invitation_id')
+      .notNull()
+      .references(() => invitations.id, { onDelete: 'cascade' }),
+    tokenHash: text('token_hash').notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+    createdAt,
+  },
+  (t) => [
+    uniqueIndex('invitation_sessions_token_hash').on(t.tokenHash),
+    index('invitation_sessions_invitation_id').on(t.invitationId),
+  ],
+);
+
 export const controlSessions = pgTable(
   'control_sessions',
   {

@@ -24,6 +24,7 @@
 - Используется существующий Nginx; Docker и Caddy не используются.
 - Безопасность, ограничения нагрузки и статистика входят в первую версию.
 - Воркер Windows — нативный C#/.NET (self-contained exe, без Python); воркер macOS — Python.
+- Ссылка спикера — без пароля: длинный GUID-токен (два UUIDv4, 244 бита), срок действия и отзыв.
 
 ## Разработка / Development
 
@@ -62,6 +63,9 @@ Windows worker (native C#/.NET 10, `worker-windows/`): build and test on a Windo
 
 Пульт: кабинет → «Открыть пульт» у устройства. Крупные кнопки «Назад»/«Вперёд», стрелки клавиатуры, таймер (5/10/15 мин, стоп), статус связи; при потере связи управление блокируется. Браузер берёт адрес Socket.IO из `/api/config` (`SOCKET_PUBLIC_URL`; пусто = тот же origin за Nginx). Один управляющий сеанс на устройство, передача — по запросу с подтверждением владельца (пульт или кабинет), до 5 пультов на устройство. Команды: TTL 2 с, дедупликация на воркере, лимит 5/с со всплеском 10.
 Remote: dashboard → "Open remote" on a device. Large Back/Forward buttons, keyboard arrows, timer (5/10/15 min, stop), connection status; control is blocked when offline. The browser gets the Socket.IO URL from `/api/config` (`SOCKET_PUBLIC_URL`; empty = same origin behind Nginx). One control session per device; transfer on request with owner approval (remote or dashboard); up to 5 remotes per device. Commands: 2 s TTL, worker-side dedup, 5/s limit with burst 10.
+
+Приглашения спикера: кабинет → «Приглашения» у устройства → язык пульта, срок (2–24 ч) → «Создать ссылку». Ссылка без пароля, с длинным GUID-токеном (два UUIDv4, 244 бита), показывается один раз вместе с QR-кодом. Спикер открывает ссылку, нажимает «Открыть пульт» и попадает на пульт одного компьютера без регистрации; токен уходит из адресной строки. Отзыв мгновенно закрывает все сессии приглашения. Лимиты: 20 ссылок/час на аккаунт, 10 действующих на устройство.
+Speaker invitations: dashboard → "Invitations" on a device → remote language, validity (2–24 h) → "Create link". The link has no password and carries a long GUID token (two UUIDv4s, 244 bits); it is shown once with a QR code. The speaker opens the link, presses "Open remote", and gets a single-computer remote without registration; the token leaves the address bar. Revocation instantly closes all invitation sessions. Limits: 20 links/hour per account, 10 active per device.
 
 Для тестов и `db:migrate` нужен PostgreSQL и `DATABASE_URL` в `.env`. Тесты создают временные базы, поэтому роль должна иметь `CREATEDB`.
 Tests and `db:migrate` require PostgreSQL and `DATABASE_URL` in `.env`. Tests create scratch databases, so the role needs `CREATEDB`.

@@ -120,5 +120,21 @@
   "remote.timer.stop": "Stop",
   "remote.timer.minutes": "{minutes} min",
   "remote.timer.finished": "Time is up",
-  "remote.commandFailed": "Command was not executed"
+  "remote.commandFailed": "Command was not executed",
+  "cabinet.invitationsTitle": "Invitations",
+  "cabinet.invitations.create": "Create link",
+  "cabinet.invitations.lang": "Remote language",
+  "cabinet.invitations.hours": "Validity",
+  "cabinet.invitations.hoursValue": "{hours} h",
+  "cabinet.invitations.revoke": "Revoke",
+  "cabinet.invitations.copy": "Copy link",
+  "cabinet.invitations.copied": "Link copied",
+  "cabinet.invitations.qr": "Link QR code",
+  "cabinet.invitations.empty": "No active invitations.",
+  "cabinet.invitations.expires": "Expires",
+  "cabinet.invitations.linkHint": "The link is shown once — save it.",
+  "invite.title": "Speaker remote",
+  "invite.hint": "Access to one computer's remote without registration.",
+  "invite.submit": "Open remote",
+  "invite.missing": "The invitation link is missing or invalid."
 }

@@ -3,7 +3,7 @@ import type { Socket } from 'socket.io';
 export interface RemoteInfo {
   socket: Socket;
   deviceId: string;
-  userId: string;
+  userId: string | null;
   controlSessionId: string | null;
 }
 
@@ -11,7 +11,7 @@ export interface TakeoverRequest {
   requestId: string;
   deviceId: string;
   fromSocketId: string;
-  fromUserId: string;
+  fromUserId: string | null;
   expiresAt: number;
 }
 

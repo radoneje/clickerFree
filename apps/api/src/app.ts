@@ -14,6 +14,7 @@ import { registerVersionRoute } from './releases/version.js';
 import { attachRealtime } from './realtime/gateway.js';
 import { registerRemoteNamespace } from './realtime/remote.js';
 import { registerControlRoutes } from './control/routes.js';
+import { registerInvitationRoutes } from './invitations/routes.js';
 import { BROWSER_COOKIE, CSRF_COOKIE, SESSION_COOKIE } from './auth/cookies.js';
 import { findSession } from './auth/sessions.js';
 import './types.js';
@@ -155,6 +156,7 @@ export function buildApp({ config, pool, fetchImpl }: BuildAppOptions): FastifyI
   const io = attachRealtime(app, { config, db });
   registerRemoteNamespace(io, { config, db });
   registerControlRoutes(app, { config, db, io });
+  registerInvitationRoutes(app, { config, db, io });
 
   return app;
 }

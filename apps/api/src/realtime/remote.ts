@@ -10,7 +10,8 @@ import {
 } from '@clickerfree/contracts';
 import type { ApiConfig } from '../config.js';
 import { findSession } from '../auth/sessions.js';
-import { SESSION_COOKIE } from '../auth/cookies.js';
+import { INVITATION_COOKIE, SESSION_COOKIE } from '../auth/cookies.js';
+import { findInvitationSession } from '../invitations/sessions.js';
 import { getConnection, isOnline } from './registry.js';
 import {
   addRemote,
@@ -43,22 +44,33 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
     try {
       const cookies = parseCookie(socket.handshake.headers.cookie ?? '');
       const token = cookies[SESSION_COOKIE];
-      const auth = token ? await findSession(db, token) : null;
-      if (!auth) return next(new Error('unauthorized'));
+      const userAuth = token ? await findSession(db, token) : null;
+      const invitationToken = cookies[INVITATION_COOKIE];
+      const invitationAuth =
+        !userAuth && invitationToken ? await findInvitationSession(db, invitationToken) : null;
+      if (!userAuth && !invitationAuth) return next(new Error('unauthorized'));
       const deviceId = (socket.handshake.auth as { deviceId?: string }).deviceId;
       if (typeof deviceId !== 'string') return next(new Error('validation_failed'));
+      if (invitationAuth && invitationAuth.deviceId !== deviceId) {
+        return next(new Error('forbidden'));
+      }
       const rows = await db
         .select()
         .from(devices)
         .where(
-          and(eq(devices.id, deviceId), eq(devices.userId, auth.userId), isNull(devices.revokedAt)),
+          and(
+            eq(devices.id, deviceId),
+            isNull(devices.revokedAt),
+            ...(userAuth ? [eq(devices.userId, userAuth.userId)] : []),
+          ),
         )
         .limit(1);
       if (!rows[0]) return next(new Error('forbidden'));
       if (remotesForDevice(deviceId).length >= MAX_REMOTES_PER_DEVICE) {
         return next(new Error('remote_limit_reached'));
       }
-      socket.data.userId = auth.userId;
+      socket.data.userId = userAuth?.userId ?? null;
+      socket.data.invitationId = invitationAuth?.invitationId ?? null;
       socket.data.deviceId = deviceId;
       return next();
     } catch {
@@ -68,7 +80,7 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
 
   namespace.on('connection', async (socket) => {
     const deviceId = socket.data.deviceId as string;
-    const userId = socket.data.userId as string;
+    const userId = socket.data.userId as string | null;
     await socket.join(deviceRoom(deviceId));
     const remote = { socket, deviceId, userId, controlSessionId: null as string | null };
     addRemote(remote);
@@ -128,13 +140,13 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
 
     socket.on(socketEvents.controlApprove, async (payload) => {
       const parsed = takeoverDecisionSchema.safeParse(payload);
-      if (!parsed.success) return;
+      if (!parsed.success || userId === null) return;
       await approveTakeover(db, io, parsed.data.requestId, userId);
     });
 
     socket.on(socketEvents.controlDeny, async (payload) => {
       const parsed = takeoverDecisionSchema.safeParse(payload);
-      if (!parsed.success) return;
+      if (!parsed.success || userId === null) return;
       await denyTakeover(db, parsed.data.requestId, userId);
     });
 
@@ -143,7 +155,8 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
       if (!parsed.success) return;
       const current = getRemote(socket.id);
       const owner = await deviceOwner(db, deviceId);
-      if (!current || (current.userId !== owner && !current.controlSessionId)) return;
+      // Спикер видит таймер, но не устанавливает его.
+      if (!current || current.userId === null || current.userId !== owner) return;
       await setTimer(db, io, deviceId, parsed.data.endAt);
     });
 

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { DeviceExtras } from './device-extras';
+import { InvitationsPanel } from './invitations-panel';
 
 export interface Device {
   id: string;
@@ -127,6 +128,7 @@ export function DeviceList({ devices, locale }: { devices: Device[]; locale: str
             </a>
           </div>
           <DeviceExtras deviceId={device.id} />
+          <InvitationsPanel deviceId={device.id} locale={locale} />
         </section>
       ))}
     </div>

@@ -16,7 +16,13 @@ function formatRemaining(ms: number): string {
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-export function RemoteClient({ deviceId }: { deviceId: string }) {
+export function RemoteClient({
+  deviceId,
+  isOwner = true,
+}: {
+  deviceId: string;
+  isOwner?: boolean;
+}) {
   const t = useTranslations('remote');
   const common = useTranslations('common');
   const errors = useTranslations('errors');
@@ -134,7 +140,7 @@ export function RemoteClient({ deviceId }: { deviceId: string }) {
         </p>
       ) : null}
 
-      {takeover ? (
+      {takeover && isOwner ? (
         <div
           role="alert"
           className="flex flex-wrap items-center gap-3 rounded border border-blue-300 bg-blue-50 p-3 text-sm"
@@ -208,25 +214,27 @@ export function RemoteClient({ deviceId }: { deviceId: string }) {
                 : formatRemaining(remaining)}
           </p>
         </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {[5, 10, 15].map((minutes) => (
+        {isOwner ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {[5, 10, 15].map((minutes) => (
+              <button
+                key={minutes}
+                type="button"
+                className="rounded border border-neutral-300 px-3 py-1 text-sm hover:bg-neutral-100"
+                onClick={() => setTimerMinutes(minutes)}
+              >
+                {t('timer.minutes', { minutes })}
+              </button>
+            ))}
             <button
-              key={minutes}
               type="button"
               className="rounded border border-neutral-300 px-3 py-1 text-sm hover:bg-neutral-100"
-              onClick={() => setTimerMinutes(minutes)}
+              onClick={() => setTimerMinutes(null)}
             >
-              {t('timer.minutes', { minutes })}
+              {t('timer.stop')}
             </button>
-          ))}
-          <button
-            type="button"
-            className="rounded border border-neutral-300 px-3 py-1 text-sm hover:bg-neutral-100"
-            onClick={() => setTimerMinutes(null)}
-          >
-            {t('timer.stop')}
-          </button>
-        </div>
+          </div>
+        ) : null}
       </section>
     </div>
   );

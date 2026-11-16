@@ -120,5 +120,21 @@
   "remote.timer.stop": "Стоп",
   "remote.timer.minutes": "{minutes} мин",
   "remote.timer.finished": "Время вышло",
-  "remote.commandFailed": "Команда не выполнена"
+  "remote.commandFailed": "Команда не выполнена",
+  "cabinet.invitationsTitle": "Приглашения",
+  "cabinet.invitations.create": "Создать ссылку",
+  "cabinet.invitations.lang": "Язык пульта",
+  "cabinet.invitations.hours": "Срок действия",
+  "cabinet.invitations.hoursValue": "{hours} ч",
+  "cabinet.invitations.revoke": "Отозвать",
+  "cabinet.invitations.copy": "Копировать ссылку",
+  "cabinet.invitations.copied": "Ссылка скопирована",
+  "cabinet.invitations.qr": "QR-код ссылки",
+  "cabinet.invitations.empty": "Нет действующих приглашений.",
+  "cabinet.invitations.expires": "Истекает",
+  "cabinet.invitations.linkHint": "Ссылка показывается один раз — сохраните её.",
+  "invite.title": "Пульт спикера",
+  "invite.hint": "Доступ к пульту одного компьютера без регистрации.",
+  "invite.submit": "Открыть пульт",
+  "invite.missing": "Ссылка приглашения отсутствует или недействительна."
 }
