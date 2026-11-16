@@ -1,0 +1,63 @@
+# Пример конфигурации для существующего Nginx. Адаптировать после осмотра сервера:
+# имена сертификатов, домен и пути журналов. Секретные query-параметры в логи не попадают:
+# в журнале используется $uri (без строки запроса), а не $request.
+
+limit_req_zone $binary_remote_addr zone=clickerfree_api:10m rate=10r/s;
+limit_req_zone $binary_remote_addr zone=clickerfree_auth:10m rate=2r/s;
+
+log_format clickerfree_sanitized '$remote_addr - $remote_user [$time_local] '
+    '"$request_method $uri" $status $body_bytes_sent '
+    '"$http_referer" "$http_user_agent"';
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name clickerfree.example;
+
+    ssl_certificate     /etc/letsencrypt/live/clickerfree.example/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/clickerfree.example/privkey.pem;
+
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    client_max_body_size 64k;
+
+    access_log /var/log/nginx/clickerfree.access.log clickerfree_sanitized;
+
+    # Сайт, кабинет, пульт, админка.
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # HTTP API. Лимит неавторизованного трафика действует до обращения к базе.
+    location /api/ {
+        limit_req zone=clickerfree_api burst=40 nodelay;
+        proxy_pass http://127.0.0.1:3001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Socket.IO: WebSocket с резервным polling. Таймаут больше heartbeat воркера/пульта.
+    location /socket.io/ {
+        limit_req zone=clickerfree_api burst=40 nodelay;
+        proxy_pass http://127.0.0.1:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 75s;
+        proxy_send_timeout 75s;
+        proxy_buffering off;
+        proxy_cache off;
+    }
+}
+
+server {
+    listen 80;
+    server_name clickerfree.example;
+    return 301 https://$host$request_uri;
+}

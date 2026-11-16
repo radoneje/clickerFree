@@ -3,13 +3,20 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
-    alias: {
-      '@clickerfree/contracts': fileURLToPath(
-        new URL('./packages/contracts/src/index.ts', import.meta.url),
-      ),
-    },
+    alias: [
+      {
+        find: '@clickerfree/contracts',
+        replacement: fileURLToPath(new URL('./packages/contracts/src/index.ts', import.meta.url)),
+      },
+      {
+        find: '@clickerfree/db',
+        replacement: fileURLToPath(new URL('./db/src/index.ts', import.meta.url)),
+      },
+    ],
   },
   test: {
-    include: ['packages/*/test/**/*.test.ts', 'apps/*/test/**/*.test.ts'],
+    include: ['packages/*/test/**/*.test.ts', 'apps/*/test/**/*.test.ts', 'db/test/**/*.test.ts'],
+    testTimeout: 20000,
+    hookTimeout: 60000,
   },
 });

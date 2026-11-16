@@ -5,7 +5,8 @@
   "type": "module",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "db"
   ],
   "engines": {
     "node": ">=24"
@@ -20,7 +21,8 @@
     "check": "npm run build && npm run lint && npm run typecheck && npm run check:locales && npm run format:check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:migrate": "node scripts/db-migrate.mjs"
+    "db:generate": "npm run db:generate -w @clickerfree/db",
+    "db:migrate": "npm run build -w @clickerfree/db && npm run db:migrate -w @clickerfree/db"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

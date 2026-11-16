@@ -34,9 +34,13 @@ npm ci             # зависимости из lock-файла / install from 
 npm run check      # сборка, линт, типы, словари, формат / build, lint, types, locales, format
 npm test           # тесты Vitest / Vitest tests
 npm run build      # сборка рабочих пространств / build workspaces
-npm run db:migrate # миграции БД (заглушка до этапа 1) / DB migrations (stub until stage 1)
+npm run db:generate # генерация миграций из схемы / generate migrations from schema
+npm run db:migrate # применение миграций / apply migrations
 npm run format     # форматирование Prettier / Prettier formatting
 ```
+
+Для тестов и `db:migrate` нужен PostgreSQL и `DATABASE_URL` в `.env`. Тесты создают временные базы, поэтому роль должна иметь `CREATEDB`.
+Tests and `db:migrate` require PostgreSQL and `DATABASE_URL` in `.env`. Tests create scratch databases, so the role needs `CREATEDB`.
 
 Рабочие пространства: `apps/web`, `apps/api`, `packages/contracts`, `packages/locales`; каталоги `worker/`, `db/`, `ops/` заполняются по [плану реализации](docs/implementation-plan.md).
 Workspaces: `apps/web`, `apps/api`, `packages/contracts`, `packages/locales`; `worker/`, `db/`, `ops/` are filled in per the [implementation plan](docs/implementation-plan.md).

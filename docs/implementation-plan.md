@@ -37,6 +37,8 @@
 
 ## Этап 1 — База данных и скелет API
 
+Статус: выполнен.
+
 Результат: API поднимается, `/api/health/live` и `/api/health/ready` отвечают, миграции применяются с нуля.
 
 - `db/`: Drizzle-схема всех таблиц из architecture.md (`users`, `oauth_accounts`, `sessions`, `devices`, `device_credentials`, `pairing_requests`, `invitations`, `control_sessions`, `timers`, `worker_releases`, `download_events`, `usage_events`, `daily_metrics`, `audit_events`, `rate_limit_buckets`), версионированные миграции, UTC.
