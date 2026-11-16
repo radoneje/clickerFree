@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "paths": { "@clickerfree/contracts": ["../contracts/src/index.ts"] }
+  },
+  "include": ["test", "scripts/check-core.d.mts"]
+}

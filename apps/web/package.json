@@ -1,0 +1,14 @@
+{
+  "name": "@clickerfree/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@clickerfree/contracts": "*",
+    "@clickerfree/locales": "*"
+  }
+}

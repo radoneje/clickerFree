@@ -1,0 +1,17 @@
+{
+  "name": "@clickerfree/locales",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./ru": "./ru.json",
+    "./en": "./en.json"
+  },
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@clickerfree/contracts": "*"
+  }
+}
