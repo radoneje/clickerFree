@@ -3,5 +3,6 @@ dist
 coverage
 .next
 package-lock.json
+next-env.d.ts
 docs/*.md
 *.md

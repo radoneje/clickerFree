@@ -8,6 +8,13 @@
       "when": 1794819910322,
       "tag": "0000_watery_psynapse",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794820912130,
+      "tag": "0001_pink_archangel",
+      "breakpoints": true
     }
   ]
 }

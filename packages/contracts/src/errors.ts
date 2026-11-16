@@ -38,6 +38,9 @@ export const errorCatalog = {
   command_duplicate: [],
   worker_version_unsupported: ['minSupportedVersion'],
   version_check_unavailable: [],
+  oauth_provider_unavailable: ['provider'],
+  oauth_account_conflict: [],
+  last_provider_required: [],
 } as const satisfies Record<string, readonly string[]>;
 
 export type ErrorCode = keyof typeof errorCatalog;

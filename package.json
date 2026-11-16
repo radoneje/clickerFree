@@ -12,7 +12,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build -w @clickerfree/contracts && npm run build -w @clickerfree/db && npm run build -w @clickerfree/api && npm run build -w @clickerfree/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint .",
     "format": "prettier --write .",

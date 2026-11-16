@@ -11,6 +11,13 @@ const envSchema = z.object({
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   API_RATE_LIMIT_IP_PER_MIN: z.coerce.number().int().positive().default(600),
   API_BODY_LIMIT_BYTES: z.coerce.number().int().positive().default(65536),
+  SESSION_SECRET: z.string().min(32),
+  SESSION_TTL_DAYS: z.coerce.number().int().positive().default(30),
+  VK_ID_CLIENT_ID: z.string().default(''),
+  VK_ID_CLIENT_SECRET: z.string().default(''),
+  YANDEX_ID_CLIENT_ID: z.string().default(''),
+  YANDEX_ID_CLIENT_SECRET: z.string().default(''),
+  OAUTH_DEV_ENABLED: z.enum(['true', 'false']).default('false'),
 });
 
 export type ApiConfig = z.infer<typeof envSchema>;

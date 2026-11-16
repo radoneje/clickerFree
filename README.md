@@ -48,3 +48,6 @@ Workspaces: `apps/web`, `apps/api`, `packages/contracts`, `packages/locales`; `w
 Секреты: скопируйте `.env.example` в `.env` и заполните; `.env` не коммитится.
 Secrets: copy `.env.example` to `.env` and fill it in; never commit `.env`.
 
+Переменные окружения имеют приоритет над `.env`. Вход для разработки: при `OAUTH_DEV_ENABLED=true` (вне продакшена) доступен тестовый провайдер — `/api/auth/dev/start?dev_user=alice`. Реальные VK ID и Яндекс ID включаются заполнением `VK_ID_CLIENT_*` и `YANDEX_ID_CLIENT_*` в `.env`.
+Environment variables take precedence over `.env`. Development sign-in: with `OAUTH_DEV_ENABLED=true` (non-production) a test provider is available at `/api/auth/dev/start?dev_user=alice`. Real VK ID and Yandex ID are enabled by filling `VK_ID_CLIENT_*` and `YANDEX_ID_CLIENT_*` in `.env`.
+

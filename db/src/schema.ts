@@ -16,7 +16,7 @@ import {
 
 export const langEnum = pgEnum('lang', ['ru', 'en']);
 export const roleEnum = pgEnum('user_role', ['user', 'admin']);
-export const providerEnum = pgEnum('oauth_provider', ['vk', 'yandex']);
+export const providerEnum = pgEnum('oauth_provider', ['vk', 'yandex', 'dev']);
 export const osEnum = pgEnum('worker_os', ['windows', 'macos']);
 export const archEnum = pgEnum('worker_arch', ['x64', 'arm64']);
 

@@ -15,6 +15,14 @@ export function checkDictionaries(ru, en, errorCatalog) {
     if (!(key in ru)) issues.push(`missing ru key: ${key}`);
   }
 
+  // Плоские ключи вкладываются в пространства имён: ключ не может быть префиксом другого.
+  const allKeys = Object.keys(ru);
+  for (const key of allKeys) {
+    if (allKeys.some((other) => other !== key && other.startsWith(`${key}.`))) {
+      issues.push(`key prefix collision: "${key}" is a prefix of another key`);
+    }
+  }
+
   for (const key of Object.keys(ru)) {
     if (!(key in en)) continue;
     const ruParams = placeholders(ru[key]).join(',');

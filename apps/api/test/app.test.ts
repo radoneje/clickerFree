@@ -29,6 +29,7 @@ function makeApp(overrides: Record<string, string> = {}) {
       ...process.env,
       DATABASE_URL: scratch.url,
       LOG_LEVEL: 'silent',
+      SESSION_SECRET: 'test-session-secret-0123456789abcdef0123456789abcdef',
       ...overrides,
     }),
   });

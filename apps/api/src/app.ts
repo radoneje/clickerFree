@@ -1,17 +1,26 @@
+import { randomBytes, randomUUID } from 'node:crypto';
 import Fastify, { type FastifyError, type FastifyInstance } from 'fastify';
+import cookie from '@fastify/cookie';
 import { sql } from 'drizzle-orm';
 import { createDb, createPool } from '@clickerfree/db';
 import type { Pool } from 'pg';
 import type { ApiConfig } from './config.js';
 import { sendError } from './errors.js';
 import { takeRateLimit } from './rate-limit.js';
+import { registerAuthRoutes } from './auth/routes.js';
+import { BROWSER_COOKIE, CSRF_COOKIE, SESSION_COOKIE } from './auth/cookies.js';
+import { findSession } from './auth/sessions.js';
+import './types.js';
 
 export interface BuildAppOptions {
   config: ApiConfig;
   pool?: Pool;
+  fetchImpl?: typeof fetch;
 }
 
-export function buildApp({ config, pool }: BuildAppOptions): FastifyInstance {
+const MUTATING_METHODS = ['POST', 'PATCH', 'PUT', 'DELETE'];
+
+export function buildApp({ config, pool, fetchImpl }: BuildAppOptions): FastifyInstance {
   const app = Fastify({
     bodyLimit: config.API_BODY_LIMIT_BYTES,
     // Forwarded-заголовки принимаются только от локального Nginx.
@@ -23,6 +32,36 @@ export function buildApp({ config, pool }: BuildAppOptions): FastifyInstance {
   const db = createDb(ownPool);
   app.addHook('onClose', async () => {
     await ownPool.end();
+  });
+
+  app.register(cookie, { secret: config.SESSION_SECRET, hook: 'onRequest' });
+  app.decorateRequest('auth', null);
+  app.decorateRequest('browserId', '');
+
+  // Идентификатор браузера выдаётся до проверки лимитов, чтобы первый запрос
+  // не попадал в общий бакет с пустым ключом.
+  app.addHook('onRequest', async (request, reply) => {
+    if (!request.url.startsWith('/api/')) return;
+    const secure = config.NODE_ENV === 'production';
+    request.browserId = request.cookies[BROWSER_COOKIE] ?? randomUUID();
+    if (!request.cookies[BROWSER_COOKIE]) {
+      reply.setCookie(BROWSER_COOKIE, request.browserId, {
+        path: '/',
+        sameSite: 'lax',
+        secure,
+        httpOnly: true,
+        maxAge: 31536000,
+      });
+    }
+    if (!request.cookies[CSRF_COOKIE]) {
+      reply.setCookie(CSRF_COOKIE, randomBytes(24).toString('base64url'), {
+        path: '/',
+        sameSite: 'lax',
+        secure,
+        httpOnly: false,
+        maxAge: 31536000,
+      });
+    }
   });
 
   app.addHook('onRequest', async (request, reply) => {
@@ -45,6 +84,26 @@ export function buildApp({ config, pool }: BuildAppOptions): FastifyInstance {
       return sendError(reply, 429, 'rate_limited', {
         retryAfterSeconds: result.retryAfterSeconds,
       });
+    }
+  });
+
+  app.addHook('onRequest', async (request) => {
+    if (!request.url.startsWith('/api/')) return;
+    const token = request.cookies[SESSION_COOKIE];
+    request.auth = token ? await findSession(db, token) : null;
+  });
+
+  // CSRF применяется к cookie-сессиям; токенная аутентификация воркеров появится позже.
+  app.addHook('onRequest', async (request, reply) => {
+    if (!MUTATING_METHODS.includes(request.method) || !request.auth) return;
+    const csrfCookie = request.cookies[CSRF_COOKIE];
+    const csrfHeader = request.headers['x-csrf-token'];
+    if (
+      request.headers.origin !== config.APP_BASE_URL ||
+      !csrfCookie ||
+      csrfHeader !== csrfCookie
+    ) {
+      return sendError(reply, 403, 'csrf_invalid', {});
     }
   });
 
@@ -75,6 +134,8 @@ export function buildApp({ config, pool }: BuildAppOptions): FastifyInstance {
       return sendError(reply, 503, 'service_unavailable', {});
     }
   });
+
+  registerAuthRoutes(app, { config, db, fetchImpl: fetchImpl ?? globalThis.fetch });
 
   return app;
 }

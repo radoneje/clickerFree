@@ -58,4 +58,15 @@ describe('checkDictionaries detects problems', () => {
     expect(issues).toContain('missing ru key: errors.sample_error');
     expect(issues).toContain('missing en key: errors.sample_error');
   });
+
+  it('flags keys that are prefixes of other keys', () => {
+    const issues = checkDictionaries(
+      { 'settings.language': 'Язык', 'settings.language.hint': 'Подсказка' },
+      { 'settings.language': 'Language', 'settings.language.hint': 'Hint' },
+      {},
+    );
+    expect(issues).toContain(
+      'key prefix collision: "settings.language" is a prefix of another key',
+    );
+  });
 });
