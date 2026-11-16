@@ -80,7 +80,7 @@ export function registerDownloadRoutes(
         eventId: parsed.data.eventId,
         kind: 'first_run',
         installId: parsed.data.installId,
-        action: null,
+        action: `${parsed.data.os}/${parsed.data.arch}`,
         processingMs: null,
       })
       .onConflictDoNothing();

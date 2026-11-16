@@ -7,6 +7,7 @@ export interface SessionAuth {
   userId: string;
   role: 'user' | 'admin';
   siteLang: 'ru' | 'en';
+  totpEnabled: boolean;
 }
 
 export function hashToken(token: string): string {
@@ -30,6 +31,7 @@ export async function findSession(db: Db, token: string): Promise<SessionAuth | 
       userId: users.id,
       role: users.role,
       siteLang: users.siteLang,
+      totpEnabled: users.totpEnabled,
     })
     .from(sessions)
     .innerJoin(users, eq(sessions.userId, users.id))

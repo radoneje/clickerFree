@@ -17,6 +17,8 @@ import { attachRealtime } from './realtime/gateway.js';
 import { registerRemoteNamespace } from './realtime/remote.js';
 import { registerControlRoutes } from './control/routes.js';
 import { registerInvitationRoutes } from './invitations/routes.js';
+import { registerAdminRoutes } from './admin/routes.js';
+import { startAnalyticsScheduler } from './analytics/jobs.js';
 import { BROWSER_COOKIE, CSRF_COOKIE, SESSION_COOKIE } from './auth/cookies.js';
 import { findSession } from './auth/sessions.js';
 import './types.js';
@@ -161,6 +163,12 @@ export function buildApp({ config, pool, fetchImpl }: BuildAppOptions): FastifyI
   registerRemoteNamespace(io, { config, db });
   registerControlRoutes(app, { config, db, io });
   registerInvitationRoutes(app, { config, db, io });
+  registerAdminRoutes(app, { config, db });
+
+  const stopAnalytics = startAnalyticsScheduler(db);
+  app.addHook('onClose', async () => {
+    stopAnalytics();
+  });
 
   return app;
 }

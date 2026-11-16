@@ -12,6 +12,7 @@ import type { ApiConfig } from '../config.js';
 import { findSession } from '../auth/sessions.js';
 import { INVITATION_COOKIE, SESSION_COOKIE } from '../auth/cookies.js';
 import { findInvitationSession } from '../invitations/sessions.js';
+import { endUsageSession, markUsageStarted, recordCommandEvent } from '../analytics/events.js';
 import { getConnection, isOnline } from './registry.js';
 import {
   addRemote,
@@ -86,6 +87,7 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
     addRemote(remote);
 
     socket.on(socketEvents.controlCommand, async (payload) => {
+      const receivedAt = Date.now();
       const parsed = remoteCommandSchema.safeParse(payload);
       if (!parsed.success) return;
       const current = getRemote(socket.id);
@@ -93,6 +95,15 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
         socket.emit(socketEvents.controlAck, {
           commandId: parsed.data.commandId,
           status: 'rejected',
+          errorCode: 'control_session_required',
+        });
+        void recordCommandEvent(db, {
+          deviceId,
+          controlSessionId: 'none',
+          commandId: parsed.data.commandId,
+          action: parsed.data.action,
+          processingMs: Date.now() - receivedAt,
+          rejected: true,
           errorCode: 'control_session_required',
         });
         return;
@@ -103,6 +114,15 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
           status: 'rejected',
           errorCode: 'command_rate_limited',
         });
+        void recordCommandEvent(db, {
+          deviceId,
+          controlSessionId: current.controlSessionId,
+          commandId: parsed.data.commandId,
+          action: parsed.data.action,
+          processingMs: Date.now() - receivedAt,
+          rejected: true,
+          errorCode: 'command_rate_limited',
+        });
         return;
       }
       const worker = getConnection(deviceId);
@@ -110,6 +130,15 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
         socket.emit(socketEvents.controlAck, {
           commandId: parsed.data.commandId,
           status: 'rejected',
+          errorCode: 'device_offline',
+        });
+        void recordCommandEvent(db, {
+          deviceId,
+          controlSessionId: current.controlSessionId,
+          commandId: parsed.data.commandId,
+          action: parsed.data.action,
+          processingMs: Date.now() - receivedAt,
+          rejected: true,
           errorCode: 'device_offline',
         });
         return;
@@ -125,6 +154,14 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
         .update(controlSessions)
         .set({ lastCommandAt: new Date() })
         .where(eq(controlSessions.id, current.controlSessionId));
+      void markUsageStarted(db, current.controlSessionId);
+      void recordCommandEvent(db, {
+        deviceId,
+        controlSessionId: current.controlSessionId,
+        commandId: parsed.data.commandId,
+        action: parsed.data.action,
+        processingMs: Date.now() - receivedAt,
+      });
     });
 
     socket.on(socketEvents.controlRequest, async () => {
@@ -164,6 +201,7 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
       const current = getRemote(socket.id);
       removeRemote(socket.id);
       if (current?.controlSessionId) {
+        void endUsageSession(db, current.controlSessionId);
         await releaseControl(db, io, deviceId);
       }
     });

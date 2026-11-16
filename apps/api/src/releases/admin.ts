@@ -1,23 +1,10 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { desc, eq } from 'drizzle-orm';
 import { auditEvents, workerReleases, type Db } from '@clickerfree/db';
 import { releaseUpsertSchema } from '@clickerfree/contracts';
 import type { ApiConfig } from '../config.js';
 import { sendError } from '../errors.js';
-import type { SessionAuth } from '../auth/sessions.js';
-
-function requireAdmin(request: FastifyRequest, reply: FastifyReply): SessionAuth | null {
-  const auth = request.auth;
-  if (!auth) {
-    sendError(reply, 401, 'unauthorized', {});
-    return null;
-  }
-  if (auth.role !== 'admin') {
-    sendError(reply, 403, 'forbidden', {});
-    return null;
-  }
-  return auth;
-}
+import { requireAdmin } from '../admin/guard.js';
 
 function allowedHosts(config: ApiConfig): string[] {
   return config.ALLOWED_DOWNLOAD_HOSTS.split(',')
@@ -30,13 +17,13 @@ export function registerReleaseAdminRoutes(
   { config, db }: { config: ApiConfig; db: Db },
 ): void {
   app.get('/api/admin/releases', async (request, reply) => {
-    if (!requireAdmin(request, reply)) return;
+    if (!(await requireAdmin(request, reply, db))) return;
     const rows = await db.select().from(workerReleases).orderBy(desc(workerReleases.createdAt));
     return { releases: rows };
   });
 
   app.post('/api/admin/releases', async (request, reply) => {
-    const auth = requireAdmin(request, reply);
+    const auth = await requireAdmin(request, reply, db);
     if (!auth) return;
     const parsed = releaseUpsertSchema.safeParse(request.body);
     if (!parsed.success) return sendError(reply, 400, 'validation_failed', { field: 'body' });
@@ -62,7 +49,7 @@ export function registerReleaseAdminRoutes(
   });
 
   app.post('/api/admin/releases/:id/publish', async (request, reply) => {
-    const auth = requireAdmin(request, reply);
+    const auth = await requireAdmin(request, reply, db);
     if (!auth) return;
     const { id } = request.params as { id: string };
     const [row] = await db
@@ -81,7 +68,7 @@ export function registerReleaseAdminRoutes(
   });
 
   app.post('/api/admin/releases/:id/unpublish', async (request, reply) => {
-    const auth = requireAdmin(request, reply);
+    const auth = await requireAdmin(request, reply, db);
     if (!auth) return;
     const { id } = request.params as { id: string };
     const [row] = await db

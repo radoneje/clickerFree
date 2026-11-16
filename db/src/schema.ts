@@ -26,6 +26,8 @@ export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   role: roleEnum('role').notNull().default('user'),
   siteLang: langEnum('site_lang').notNull().default('ru'),
+  totpSecret: text('totp_secret'),
+  totpEnabled: boolean('totp_enabled').notNull().default(false),
   createdAt,
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
@@ -176,6 +178,8 @@ export const controlSessions = pgTable(
     startedAt: timestamp('started_at', { withTimezone: true }).notNull().defaultNow(),
     endedAt: timestamp('ended_at', { withTimezone: true }),
     lastCommandAt: timestamp('last_command_at', { withTimezone: true }),
+    usageStartedAt: timestamp('usage_started_at', { withTimezone: true }),
+    usageEndedAt: timestamp('usage_ended_at', { withTimezone: true }),
   },
   (t) => [
     index('control_sessions_device_id').on(t.deviceId),
@@ -225,6 +229,7 @@ export const downloadEvents = pgTable(
     appVersion: text('app_version'),
     installId: uuid('install_id'),
     ipHash: text('ip_hash'),
+    suspicious: boolean('suspicious').notNull().default(false),
     createdAt,
   },
   (t) => [
@@ -246,6 +251,7 @@ export const usageEvents = pgTable(
     action: text('action'),
     processingMs: integer('processing_ms'),
     installId: uuid('install_id'),
+    suspicious: boolean('suspicious').notNull().default(false),
     createdAt,
   },
   (t) => [

@@ -37,6 +37,15 @@ export default async function AdminReleasesPage({
     );
   }
 
+  const totpResponse = await fetch(`${API_INTERNAL_URL}/api/admin/totp/status`, {
+    headers: { cookie: cookieHeader },
+    cache: 'no-store',
+  });
+  if (totpResponse.ok) {
+    const totp = (await totpResponse.json()) as { enabled: boolean; verified: boolean };
+    if (totp.enabled && !totp.verified) redirect(`/${locale}/admin`);
+  }
+
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
       <h1 className="text-2xl font-semibold">{t('title')}</h1>
