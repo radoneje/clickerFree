@@ -10,6 +10,7 @@ public sealed record WorkerConfig
     [JsonPropertyName("lang")] public string? Lang { get; init; }
     [JsonPropertyName("server")] public string Server { get; init; } = "http://localhost:3000";
     [JsonPropertyName("apiServer")] public string? ApiServer { get; init; }
+    [JsonPropertyName("firstRunEventId")] public string? FirstRunEventId { get; init; }
 }
 
 public static class ConfigStore

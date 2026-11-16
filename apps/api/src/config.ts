@@ -19,6 +19,7 @@ const envSchema = z.object({
   YANDEX_ID_CLIENT_SECRET: z.string().default(''),
   OAUTH_DEV_ENABLED: z.enum(['true', 'false']).default('false'),
   SOCKET_PUBLIC_URL: z.string().default(''),
+  ALLOWED_DOWNLOAD_HOSTS: z.string().default('github.com,objects.githubusercontent.com'),
 });
 
 export type ApiConfig = z.infer<typeof envSchema>;

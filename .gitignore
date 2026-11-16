@@ -20,3 +20,5 @@ worker-windows/**/bin/
 worker-windows/**/obj/
 TestResults/
 *.egg-info/
+ops/keys/*.private.pem
+ops/dist/

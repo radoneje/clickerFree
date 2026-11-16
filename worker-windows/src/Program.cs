@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net.Http.Json;
 using System.Text;
 using ClickerFree.Worker;
 
@@ -68,6 +69,30 @@ if (info is not null && !Service.IsSupported(info))
         ["min"] = info.MinSupportedVersion,
     }));
     return 1;
+}
+if (info is not null)
+{
+    await Release.SuggestUpdateAsync(http, info, lang, Console.WriteLine);
+}
+if (cfg.FirstRunEventId is null)
+{
+    cfg = cfg with { FirstRunEventId = Guid.NewGuid().ToString() };
+    ConfigStore.Save(cfg);
+}
+try
+{
+    await http.PostAsJsonAsync($"{cfg.Server}/api/worker/first-run", new
+    {
+        installId = cfg.InstallId,
+        eventId = cfg.FirstRunEventId,
+        os = "windows",
+        arch = Service.Arch,
+        appVersion = Service.AppVersion,
+    });
+}
+catch
+{
+    // Аналитика не должна мешать запуску воркера.
 }
 
 var (deviceId, credential) = Secrets.GetDeviceCredentials();

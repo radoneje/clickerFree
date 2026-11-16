@@ -1,18 +1,48 @@
 """Точка входа воркера: mutex, конфигурация, привязка, проверка версии, соединение."""
 
 import argparse
+import json
 import sys
 import time
+import urllib.request
+import uuid
 import webbrowser
 
 from . import __version__
 from .client import build_client
 from .config import config_dir, load_config, save_config
 from .i18n import detect_lang, t
-from .pairing import fetch_result, request_code
+from .pairing import current_arch, current_os, fetch_result, request_code
+from .release import suggest_update
 from .secrets import get_device_credentials, get_worker_secret, store_device_credentials
 from .single_instance import InstanceLock
 from .version import fetch_version, is_supported
+
+
+def report_first_run(cfg) -> None:
+    if not cfg.first_run_event_id:
+        cfg.first_run_event_id = str(uuid.uuid4())
+        save_config(cfg)
+    payload = json.dumps(
+        {
+            "installId": cfg.install_id,
+            "eventId": cfg.first_run_event_id,
+            "os": current_os(),
+            "arch": current_arch(),
+            "appVersion": __version__,
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(
+        f"{cfg.server}/api/worker/first-run",
+        data=payload,
+        headers={"content-type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=5):
+            pass
+    except Exception:  # noqa: BLE001 - аналитика не должна мешать запуску
+        pass
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -68,6 +98,9 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
             return 1
+        if info is not None:
+            suggest_update(info, lang)
+        report_first_run(cfg)
 
         device_id, credential = get_device_credentials()
         if not credential or not device_id:

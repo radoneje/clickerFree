@@ -35,7 +35,7 @@ export async function createScratchDatabase(): Promise<ScratchDatabase> {
     url,
     drop: async () => {
       await admin.query(
-        `select pg_terminate_backend(pid) from pg_stat_activity where datname = $1 and pid <> pg_backend_pid()`,
+        `select pg_terminate_backend(pid) from pg_stat_activity where datname = $1 and pid <> pg_backend_pid() and backend_type = 'client backend'`,
         [name],
       );
       await admin.query(`DROP DATABASE IF EXISTS ${name}`);

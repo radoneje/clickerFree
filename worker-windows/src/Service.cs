@@ -9,6 +9,7 @@ public sealed record VersionInfo(
     [property: JsonPropertyName("minSupportedVersion")] string MinSupportedVersion,
     [property: JsonPropertyName("protocolVersion")] int ProtocolVersion,
     [property: JsonPropertyName("downloadUrl")] string? DownloadUrl,
+    [property: JsonPropertyName("manifestUrl")] string? ManifestUrl,
     [property: JsonPropertyName("sha256")] string? Sha256,
     [property: JsonPropertyName("descriptionKey")] string? DescriptionKey);
 

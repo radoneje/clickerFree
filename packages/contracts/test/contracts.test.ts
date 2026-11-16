@@ -103,6 +103,7 @@ describe('worker auth and version check', () => {
       minSupportedVersion: '1.0.0',
       protocolVersion: PROTOCOL_VERSION,
       downloadUrl: 'https://github.com/clickerfree/releases/download/v1.1.0/worker-macos-arm64',
+      manifestUrl: null,
       sha256: 'a'.repeat(64),
       descriptionKey: 'releases.v1_1_0.description',
     };

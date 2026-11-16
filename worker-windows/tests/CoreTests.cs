@@ -44,10 +44,10 @@ public class SemverTests
     [Fact]
     public void IsSupportedChecksProtocolAndMinimum()
     {
-        Assert.True(Service.IsSupported(new VersionInfo("0.1.0", "0.0.0", Service.ProtocolVersion, null, null, null)));
-        Assert.True(Service.IsSupported(new VersionInfo("0.1.0", "0.1.0", Service.ProtocolVersion, null, null, null)));
-        Assert.False(Service.IsSupported(new VersionInfo("0.1.0", "99.0.0", Service.ProtocolVersion, null, null, null)));
-        Assert.False(Service.IsSupported(new VersionInfo("0.1.0", "0.0.0", Service.ProtocolVersion + 1, null, null, null)));
+        Assert.True(Service.IsSupported(new VersionInfo("0.1.0", "0.0.0", Service.ProtocolVersion, null, null, null, null)));
+        Assert.True(Service.IsSupported(new VersionInfo("0.1.0", "0.1.0", Service.ProtocolVersion, null, null, null, null)));
+        Assert.False(Service.IsSupported(new VersionInfo("0.1.0", "99.0.0", Service.ProtocolVersion, null, null, null, null)));
+        Assert.False(Service.IsSupported(new VersionInfo("0.1.0", "0.0.0", Service.ProtocolVersion + 1, null, null, null, null)));
     }
 }
 

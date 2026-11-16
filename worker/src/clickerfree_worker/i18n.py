@@ -16,6 +16,7 @@ MESSAGES = {
         "version_check_failed": "Не удалось проверить версию. Повторная попытка…",
         "keyring_unavailable": "Системное хранилище секретов недоступно: {error}",
         "unsupported_os": "Этот воркер поддерживает только macOS. Для Windows используйте нативный воркер.",
+        "update_available": "Доступно обновление {version}. Скачайте вручную: {url}",
         "goodbye": "Воркер остановлен.",
     },
     "en": {
@@ -31,6 +32,7 @@ MESSAGES = {
         "version_check_failed": "Version check failed. Retrying…",
         "keyring_unavailable": "System secret storage is unavailable: {error}",
         "unsupported_os": "This worker supports macOS only. Use the native Windows worker on Windows.",
+        "update_available": "Update {version} is available. Download manually: {url}",
         "goodbye": "Worker stopped.",
     },
 }

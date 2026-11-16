@@ -18,6 +18,8 @@ class Config:
     # Прямой адрес API для Socket.IO при локальной разработке (в продакшене Nginx
     # маршрутизирует /socket.io/ на API, и достаточно server).
     api_server: str | None = None
+    # Стабильный eventId первого запуска: повторные запуски не удваивают событие.
+    first_run_event_id: str | None = None
 
 
 def config_dir() -> Path:

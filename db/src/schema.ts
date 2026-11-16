@@ -204,6 +204,7 @@ export const workerReleases = pgTable(
     arch: archEnum('arch').notNull(),
     protocolVersion: integer('protocol_version').notNull(),
     downloadUrl: text('download_url').notNull(),
+    manifestUrl: text('manifest_url'),
     sha256: text('sha256').notNull(),
     descriptionKey: text('description_key').notNull(),
     minSupportedVersion: text('min_supported_version').notNull().default('0.0.0'),
@@ -244,6 +245,7 @@ export const usageEvents = pgTable(
     kind: text('kind').notNull(),
     action: text('action'),
     processingMs: integer('processing_ms'),
+    installId: uuid('install_id'),
     createdAt,
   },
   (t) => [

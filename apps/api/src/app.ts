@@ -11,6 +11,8 @@ import { registerAuthRoutes } from './auth/routes.js';
 import { registerPairingRoutes } from './pairing/routes.js';
 import { registerDeviceRoutes } from './devices/routes.js';
 import { registerVersionRoute } from './releases/version.js';
+import { registerReleaseAdminRoutes } from './releases/admin.js';
+import { registerDownloadRoutes } from './releases/download.js';
 import { attachRealtime } from './realtime/gateway.js';
 import { registerRemoteNamespace } from './realtime/remote.js';
 import { registerControlRoutes } from './control/routes.js';
@@ -153,6 +155,8 @@ export function buildApp({ config, pool, fetchImpl }: BuildAppOptions): FastifyI
   registerPairingRoutes(app, { db });
   registerDeviceRoutes(app, { db });
   registerVersionRoute(app, { config, db });
+  registerReleaseAdminRoutes(app, { config, db });
+  registerDownloadRoutes(app, { config, db });
   const io = attachRealtime(app, { config, db });
   registerRemoteNamespace(io, { config, db });
   registerControlRoutes(app, { config, db, io });

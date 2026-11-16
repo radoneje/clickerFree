@@ -54,6 +54,7 @@ export const versionCheckResponseSchema = z.object({
   protocolVersion: z.number().int().positive(),
   // До публикации первого релиза ссылки и контрольные суммы отсутствуют.
   downloadUrl: z.url({ protocol: /^https$/ }).nullable(),
+  manifestUrl: z.url({ protocol: /^https?$/ }).nullable(),
   sha256: z
     .string()
     .regex(/^[0-9a-f]{64}$/)
@@ -61,6 +62,28 @@ export const versionCheckResponseSchema = z.object({
   descriptionKey: z.string().min(1).nullable(),
 });
 export type VersionCheckResponse = z.infer<typeof versionCheckResponseSchema>;
+
+export const firstRunSchema = z.object({
+  installId: z.uuid(),
+  eventId: z.uuid(),
+  os: workerOsSchema,
+  arch: workerArchSchema,
+  appVersion: z.string().min(1),
+});
+export type FirstRun = z.infer<typeof firstRunSchema>;
+
+export const releaseUpsertSchema = z.object({
+  version: z.string().min(1),
+  os: workerOsSchema,
+  arch: workerArchSchema,
+  protocolVersion: z.number().int().positive(),
+  downloadUrl: z.url({ protocol: /^https$/ }),
+  manifestUrl: z.url({ protocol: /^https?$/ }).nullable(),
+  sha256: z.string().regex(/^[0-9a-f]{64}$/),
+  descriptionKey: z.string().min(1),
+  minSupportedVersion: z.string().min(1).default('0.0.0'),
+});
+export type ReleaseUpsert = z.infer<typeof releaseUpsertSchema>;
 
 export const pairingCodeRequestSchema = z.object({
   installId: z.uuid(),

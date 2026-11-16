@@ -51,6 +51,7 @@ export function registerVersionRoute(app: FastifyInstance, { db }: { config: Api
       minSupportedVersion: release?.minSupportedVersion ?? '0.0.0',
       protocolVersion: PROTOCOL_VERSION,
       downloadUrl: release?.downloadUrl ?? null,
+      manifestUrl: release?.manifestUrl ?? null,
       sha256: release?.sha256 ?? null,
       descriptionKey: release?.descriptionKey ?? null,
     };

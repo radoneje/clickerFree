@@ -15,6 +15,7 @@ public static class Messages
         ["version_unsupported"] = "Версия {version} не поддерживается. Минимальная: {min}. Обновите воркер.",
         ["version_check_failed"] = "Не удалось проверить версию. Повторная попытка…",
         ["credential_unavailable"] = "Не удалось получить доступ к хранилищу учётных данных: {error}",
+        ["update_available"] = "Доступно обновление {version}. Скачайте вручную: {url}",
         ["goodbye"] = "Воркер остановлен.",
     };
 
@@ -31,6 +32,7 @@ public static class Messages
         ["version_unsupported"] = "Version {version} is unsupported. Minimum: {min}. Update the worker.",
         ["version_check_failed"] = "Version check failed. Retrying…",
         ["credential_unavailable"] = "Cannot access credential storage: {error}",
+        ["update_available"] = "Update {version} is available. Download manually: {url}",
         ["goodbye"] = "Worker stopped.",
     };
 

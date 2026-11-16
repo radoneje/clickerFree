@@ -17,7 +17,7 @@ def test_config_file_contains_no_secrets(tmp_path):
     cfg.lang = "en"
     save_config(cfg, tmp_path)
     data = json.loads((tmp_path / "config.json").read_text(encoding="utf-8"))
-    assert set(data) == {"install_id", "name", "lang", "server", "api_server"}
+    assert set(data) == {"install_id", "name", "lang", "server", "api_server", "first_run_event_id"}
     assert load_config(tmp_path).lang == "en"
 
 
