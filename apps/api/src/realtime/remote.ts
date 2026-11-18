@@ -44,13 +44,19 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
   namespace.use(async (socket, next) => {
     try {
       const cookies = parseCookie(socket.handshake.headers.cookie ?? '');
-      const token = cookies[SESSION_COOKIE];
+      const handshakeAuth = socket.handshake.auth as {
+        deviceId?: string;
+        sessionToken?: string;
+        invitationToken?: string;
+      };
+      // Браузер шлёт cookie; нативные клиенты могут передать токен в auth.
+      const token = cookies[SESSION_COOKIE] ?? handshakeAuth.sessionToken;
       const userAuth = token ? await findSession(db, token) : null;
-      const invitationToken = cookies[INVITATION_COOKIE];
+      const invitationToken = cookies[INVITATION_COOKIE] ?? handshakeAuth.invitationToken;
       const invitationAuth =
         !userAuth && invitationToken ? await findInvitationSession(db, invitationToken) : null;
       if (!userAuth && !invitationAuth) return next(new Error('unauthorized'));
-      const deviceId = (socket.handshake.auth as { deviceId?: string }).deviceId;
+      const deviceId = handshakeAuth.deviceId;
       if (typeof deviceId !== 'string') return next(new Error('validation_failed'));
       if (invitationAuth && invitationAuth.deviceId !== deviceId) {
         return next(new Error('forbidden'));
@@ -91,6 +97,7 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
       const parsed = remoteCommandSchema.safeParse(payload);
       if (!parsed.success) return;
       const current = getRemote(socket.id);
+      console.error('[remote-cmd] received', { socketId: socket.id, hasSession: Boolean(current?.controlSessionId), commandId: parsed.data.commandId });
       if (!current?.controlSessionId) {
         socket.emit(socketEvents.controlAck, {
           commandId: parsed.data.commandId,
@@ -144,6 +151,7 @@ export function registerRemoteNamespace(io: Server, { db }: { config: ApiConfig;
         return;
       }
       trackAck(parsed.data.commandId, socket.id);
+      console.error('[remote-cmd] forwarding', { deviceId, workerPresent: Boolean(worker), controlSessionId: current.controlSessionId });
       worker.socket.emit(socketEvents.controlCommand, {
         commandId: parsed.data.commandId,
         action: parsed.data.action,

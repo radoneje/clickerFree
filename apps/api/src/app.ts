@@ -125,6 +125,13 @@ export function buildApp({ config, pool, fetchImpl }: BuildAppOptions): FastifyI
     }
   });
 
+  app.addHook('onSend', async (request, reply) => {
+    if (request.url.startsWith('/api/')) {
+      reply.header('X-Content-Type-Options', 'nosniff');
+      reply.header('Cache-Control', 'no-store');
+    }
+  });
+
   app.setErrorHandler((error: FastifyError, request, reply) => {
     const status = error.statusCode ?? 500;
     if (status === 413) {
